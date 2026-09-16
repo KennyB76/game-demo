@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Twinkle Wand</title>
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <div id="hud" class="hidden">
+      <div class="hud-top">
+        <div id="hearts" class="hearts"></div>
+        <div id="wave" class="pill">Wave 1/2</div>
+      </div>
+      <div id="boss-bar" class="boss-bar hidden">
+        <div id="boss-name" class="boss-name"></div>
+        <div class="bar"><div id="boss-fill" class="fill"></div></div>
+      </div>
+      <div id="banner" class="banner"></div>
+      <div id="numbers"></div>
+    </div>
+
+    <div id="confetti"></div>
+
+    <div id="screen-title" class="screen">
+      <div class="card title-card">
+        <h1 class="logo">Twinkle <span>Wand</span></h1>
+        <p class="tagline">Bounce the grumpy jellies and cheer up the cloud!</p>
+        <div class="controls">
+          <div class="ctrl">
+            <div class="keys">
+              <div class="keygrid">
+                <kbd class="g-w">W</kbd><kbd class="g-a">A</kbd><kbd class="g-s">S</kbd><kbd class="g-d">D</kbd>
+              </div>
+              <span class="or">or</span>
+              <div class="keygrid">
+                <kbd class="g-w">&uarr;</kbd><kbd class="g-a">&larr;</kbd><kbd class="g-s">&darr;</kbd><kbd class="g-d">&rarr;</kbd>
+              </div>
+            </div>
+            <div class="label">Move</div>
+          </div>
+          <div class="ctrl">
+            <div class="keys">
+              <kbd class="wide">Space</kbd><span class="or">or</span><kbd>J</kbd><span class="or">or</span>
+              <div class="mouse"><div class="mouse-left"></div></div>
+            </div>
+            <div class="label">Magic!</div>
+          </div>
+          <div class="ctrl">
+            <div class="keys"><kbd class="wide">Shift</kbd><span class="or">or</span><kbd>K</kbd></div>
+            <div class="label">Roll</div>
+          </div>
+          <div class="ctrl">
+            <div class="keys"><kbd>R</kbd></div>
+            <div class="label">Restart</div>
+          </div>
+        </div>
+        <button id="start-btn" class="press">Press Space to Start</button>
+      </div>
+    </div>
+
+    <div id="screen-over" class="screen hidden">
+      <div class="card end-card">
+        <h2>Oops!</h2>
+        <p>Try again <kbd>R</kbd></p>
+      </div>
+    </div>
+
+    <div id="screen-clear" class="screen hidden">
+      <div class="card end-card">
+        <h2 class="yay">You did it!</h2>
+        <p>Play again <kbd>R</kbd></p>
+      </div>
+    </div>
+
+    <div class="version"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
