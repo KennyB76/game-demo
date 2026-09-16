@@ -1,4 +1,5 @@
-import { BOSS, CSS_COLORS, FEEL, VERSION } from './config.js';
+import { BOSS, CSS_COLORS, FEEL, MOCHI, VERSION } from './config.js';
+import { Mochi } from './mochi.js';
 import { STAR } from './quiz.js';
 import { pick } from './util.js';
 
@@ -20,6 +21,7 @@ export class Hud {
     this.starCount = document.getElementById('star-count');
     document.getElementById('star-icon').innerHTML = STAR;
     this.review = document.getElementById('review-card');
+    this.reviewMochi = new Mochi(document.getElementById('review-mochi'));
     this.banner = document.getElementById('banner');
     this.numbers = document.getElementById('numbers');
     this.confetti = document.getElementById('confetti');
@@ -102,6 +104,8 @@ export class Hud {
       ${learn}
       <p class="rv-again">Play again <kbd>R</kbd></p>`;
     this.showScreen('review');
+    this.reviewMochi.play('happy');
+    this.reviewMochi.say(MOCHI.lines.review);
   }
 
   showBanner(text) {

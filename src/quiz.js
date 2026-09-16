@@ -1,5 +1,6 @@
 // 퀴즈 오버레이 — Magic Recharge · Cloud Gate. 문제는 벌칙이 아니다: 틀려도 목숨은 그대로, 힌트 뒤 다시.
-import { LEARN } from './config.js';
+import { LEARN, MOCHI } from './config.js';
+import { Mochi } from './mochi.js';
 
 const KINDS = {
   recharge: { title: 'Magic Recharge', sub: 'Answer to get a heart back!' },
@@ -16,6 +17,7 @@ export class Quiz {
   constructor() {
     this.el = document.getElementById('screen-quiz');
     this.card = document.getElementById('quiz-card');
+    this.mochi = new Mochi(document.getElementById('quiz-mochi'));
     this.active = false;
     this.timer = null;
     this.card.addEventListener('mousedown', (e) => e.preventDefault()); // 버튼에 포커스가 남아 Space 가 두 번 눌리지 않게
@@ -54,6 +56,8 @@ export class Quiz {
     this.choices = question.choices.slice();
     this.phase = intro ? 'intro' : 'ask';
     this.intro = intro;
+    this.mochi.play('thinking');
+    this.mochi.say(MOCHI.lines.thinking);
     this.render();
   }
 
@@ -65,6 +69,8 @@ export class Quiz {
       this.session.report(this.q.skill, result);
       this.solved++;
       this.rewardText = this.onCorrect?.(this.kind);
+      this.mochi.play('happy', { loops: MOCHI.happyLoops, then: 'thinking' });
+      this.mochi.say(MOCHI.lines.happy);
       this.phase = 'praise';
       this.render();
       this.timer = setTimeout(() => {
@@ -74,7 +80,9 @@ export class Quiz {
       return;
     }
     this.tries++;
+    this.mochi.play('oops', { loops: MOCHI.oopsLoops, then: 'thinking' });
     if (this.tries === 1) {
+      this.mochi.say(MOCHI.lines.oops);
       this.wrongText = this.choices[i];
       this.choices = reshuffle(this.choices);
       this.picked = -1;
@@ -83,6 +91,7 @@ export class Quiz {
       this.phase = 'ask';
     } else {
       this.session.report(this.q.skill, 'missed');
+      this.mochi.say(MOCHI.lines.reveal);
       this.phase = 'reveal';
       this.render();
     }
@@ -165,8 +174,7 @@ export class Quiz {
     let extra = '';
     if (this.phase === 'retry' || (this.phase === 'ask' && this.tries === 1)) {
       extra = `
-        <div class="retry ${this.phase === 'retry' ? 'shake' : ''}">${esc(LEARN.retryText)}</div>
-        <div class="hint"><span class="hint-tag">Hint</span> ${esc(this.q.hint)}</div>`;
+        <div class="hint ${this.phase === 'retry' ? 'shake' : ''}"><span class="hint-tag">Hint</span> ${esc(this.q.hint)}</div>`;
     } else if (this.phase === 'praise') {
       const praise = LEARN.praise[Math.floor(Math.random() * LEARN.praise.length)];
       const reward = esc(this.rewardText ?? (this.kind === 'gate' ? 'Shield broken!' : '+1 heart'));

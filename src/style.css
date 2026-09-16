@@ -230,8 +230,7 @@ kbd.wide { min-width: 92px; }
 .choice.faded { opacity: 0.45; }
 .choice[disabled] { cursor: default; }
 
-.retry { margin-top: 16px; font-size: 26px; font-weight: 900; color: var(--title-a); }
-.retry.shake { animation: shake 0.4s ease-in-out; }
+.hint.shake { animation: shake 0.4s ease-in-out; }
 @keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
 .hint { margin-top: 8px; padding: 12px 16px; border-radius: 18px; background: var(--hint-bg); font-size: 19px; font-weight: 800; text-align: left; }
 .hint-tag { display: inline-block; padding: 2px 10px; margin-right: 6px; border-radius: 999px; background: var(--star); color: #fff; font-size: 14px; }
@@ -270,3 +269,60 @@ kbd.wide { min-width: 92px; }
 .rv-label { font-size: 18px; font-weight: 900; opacity: 0.8; }
 .rv-skill { font-size: 24px; font-weight: 900; color: var(--title-b); margin-top: 4px; }
 .rv-again { font-size: 26px; font-weight: 900; margin: 18px 0 0; }
+
+/* ── Mochi (퀴즈 안내 캐릭터) ──────── */
+.mochi-wrap { display: flex; align-items: center; gap: 18px; max-width: 100%; }
+.mochi-slot { flex: 0 0 auto; pointer-events: none; }
+.mochi { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.mochi-sprite {
+  width: var(--mochi-size); height: var(--mochi-size);
+  background-repeat: no-repeat; background-position: 0 0;
+  background-size: calc(var(--frames, 8) * var(--mochi-size)) var(--mochi-size);
+}
+.mochi-sprite.missing { background: none; }
+@keyframes mochi-play { to { background-position: calc(var(--frames, 8) * var(--mochi-size) * -1) 0; } }
+.mochi-bubble {
+  position: relative; max-width: 190px; padding: 8px 14px; border-radius: 18px; background: #fff;
+  font-size: 18px; font-weight: 900; text-align: center; line-height: 1.2; color: var(--text);
+  box-shadow: 0 4px 0 var(--keycap-shadow);
+}
+.mochi-bubble::after {
+  content: ''; position: absolute; left: 50%; bottom: -9px; margin-left: -9px;
+  border: 9px solid transparent; border-bottom: 0; border-top-color: #fff;
+}
+.mochi-bubble.empty { visibility: hidden; }
+.mochi-bubble.pop { animation: card-bump 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
+
+@media (max-width: 700px) {
+  .mochi-wrap { flex-direction: column; gap: 6px; width: 100%; }
+  .mochi { flex-direction: row-reverse; gap: 8px; }
+  .mochi-sprite { width: var(--mochi-size-narrow); height: var(--mochi-size-narrow); background-size: calc(var(--frames, 8) * var(--mochi-size-narrow)) var(--mochi-size-narrow); }
+  @keyframes mochi-play { to { background-position: calc(var(--frames, 8) * var(--mochi-size-narrow) * -1) 0; } }
+  .mochi-bubble { font-size: 15px; }
+  .mochi-bubble::after { left: -9px; right: auto; top: 50%; bottom: auto; margin: -9px 0 0; border: 9px solid transparent; border-left: 0; border-right-color: #fff; }
+  .screen { align-items: flex-start; overflow-y: auto; padding: 78px 0 12px; } /* HUD 아래부터 */
+  .quiz-card, .review-card { width: calc(100vw - 20px); padding: 16px 14px 20px; border-radius: 28px; }
+  .quiz-title { font-size: 28px; }
+  .quiz-sub { font-size: 15px; }
+  .ask { font-size: 20px; }
+  .math { font-size: 30px; }
+  .choices { gap: 10px; }
+  .choices.three { grid-template-columns: repeat(3, 1fr); }
+  .choice { font-size: 22px; min-height: 58px; padding: 8px 8px 8px 36px; border-radius: 16px; }
+  .choice.long { font-size: 14px; }
+  .choice .num { left: 8px; width: 22px; height: 22px; font-size: 12px; }
+  .hint { font-size: 15px; }
+  .praise-text { font-size: 34px; }
+  .reward { font-size: 18px; }
+  .reveal-answer { font-size: 20px; }
+  .reveal-explain { font-size: 16px; }
+  .intro-title { font-size: 26px; }
+  .intro-text { font-size: 17px; }
+  .intro-example { font-size: 18px; }
+  .btn.big { font-size: 18px; padding: 10px 20px; }
+  .rv-title { font-size: 38px; }
+  .rv-stars { font-size: 38px; }
+  .rv-stars .star-svg { width: 50px; height: 50px; }
+  .rv-line { font-size: 18px; }
+  .rv-skill { font-size: 18px; }
+}

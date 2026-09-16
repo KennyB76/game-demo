@@ -1,5 +1,5 @@
 // 조정 수치는 전부 여기 — 속도 · 데미지 · 경직 · 색.
-export const VERSION = 'v0.2-dev';
+export const VERSION = 'v0.3-dev';
 
 export const KEYS = {
   up: ['KeyW', 'ArrowUp'],
@@ -112,9 +112,31 @@ export const LEARN = {
   rechargeHearts: 1,
   starsPerCorrect: 1,
   praiseTime: 1.3,
-  praise: ['Great job!', 'You got it!', 'Super!', 'Awesome!', 'Nice work!', 'Wow!'],
-  retryText: 'Almost! Try again.',
+  // 카드의 큰 칭찬. "You got it!" · "Try again" 은 Mochi 말풍선이 맡는다 (MOCHI.lines)
+  praise: ['Great job!', 'Super!', 'Awesome!', 'Nice work!', 'Wow!'],
   reviewDelay: 2.4,
+};
+
+// 퀴즈 안내 캐릭터 Mochi — 2D 스프라이트 시트 (256px 프레임 8칸 가로 한 줄)
+export const MOCHI = {
+  dir: 'assets/sprites/mochi/',
+  frameSize: 256,
+  size: 180, // 표시 크기 (px)
+  sizeNarrow: 112, // 좁은 화면 (700px 이하)
+  sheets: {
+    thinking: { file: 'mochi-thinking-v01.png', frames: 8, fps: 8 },
+    happy: { file: 'mochi-happy-v02.png', frames: 8, fps: 12 },
+    oops: { file: 'mochi-oops-v02.png', frames: 8, fps: 10 },
+  },
+  happyLoops: 2, // 정답: 2회 뒤 thinking
+  oopsLoops: 1, // 오답: 1회 뒤 thinking
+  lines: {
+    thinking: "Let's think!",
+    happy: 'You got it!',
+    oops: 'Oops! Try again.',
+    reveal: "Let's look together.",
+    review: 'You did great!',
+  },
 };
 
 export const HAZARD = {
