@@ -121,8 +121,31 @@ CHECKERS['subtract-across-zeros'] = {
   value: num,
 };
 
+// 4학년 범위
+const MIN_VALUE = 0;
+const MAX_VALUE = 1000000;
+
+// 단복수: "1 ten" · "2 tens" · "the 1" (숫자 1 뒤 복수형, 2 이상 뒤 단수형, "the 1s" 는 틀림)
+const UNIT = '(one|ten|hundred|thousand|place|time|heart|star|shield)';
+function grammarProblems(text) {
+  const out = [];
+  for (const m of text.matchAll(new RegExp(`(?<![\\d,.])(\\d[\\d,]*) ${UNIT}(s?)\\b`, 'g'))) {
+    const n = num(m[1]);
+    if (n === 1 && m[3] === 's') out.push(`"${m[0]}" should be singular`);
+    if (n !== 1 && m[3] === '' && !/^[,.]?\s*(\d|thousand)/.test(text.slice(m.index + m[0].length))) out.push(`"${m[0]}" should be plural`);
+  }
+  for (const m of text.matchAll(/\bthe 1s\b/g)) out.push(`"${m[0]}" should be "the 1"`);
+  return out;
+}
+
 const failures = [];
 let total = 0;
+
+// 설명 카드도 같은 규칙
+for (const [id, skill] of Object.entries(SKILLS)) {
+  if (!skill.intro) continue;
+  for (const p of grammarProblems(`${skill.intro.text} ${skill.intro.example}`)) failures.push(`${id} intro: ${p}`);
+}
 const fail = (q, why) => failures.push(`${q.skill} L${q.level} seed ${q.seed}: ${why}\n    prompt: ${q.prompt}\n    answer: ${q.answer} | choices: ${q.choices?.join(' | ')}`);
 
 for (const id of Object.keys(SKILLS)) {
@@ -164,7 +187,14 @@ for (const id of Object.keys(SKILLS)) {
       if (new Set(values).size !== values.length) fail(q, 'two choices have the same value');
       q.choices.forEach((c, i) => {
         if (c !== q.answer && values[i] === expected) fail(q, `wrong choice "${c}" is also correct`);
+        if (typeof values[i] === 'number' && (values[i] < MIN_VALUE || values[i] > MAX_VALUE)) fail(q, `choice "${c}" is outside ${MIN_VALUE}-${MAX_VALUE.toLocaleString('en-US')}`);
       });
+      for (const n of (q.prompt.match(/\d[\d,]*/g) ?? []).map(num)) {
+        if (n > MAX_VALUE) fail(q, `prompt number ${n} is outside the grade range`);
+      }
+      for (const f of ['hint', 'explain']) {
+        for (const p of grammarProblems(q[f])) fail(q, `${f}: ${p}`);
+      }
     }
   }
 }

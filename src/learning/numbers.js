@@ -113,6 +113,9 @@ export function buildChoices(rng, answer, wrongs, { count = 4, format = fmt, val
   return { answer: format(answer), choices: values.map(format) };
 }
 
+// 4학년 범위: 모든 수는 0 ~ 1,000,000
+export const MAX_VALUE = 1000000;
+
 function defaultValid(w) {
-  return typeof w !== 'number' || (Number.isInteger(w) && w >= 0);
+  return typeof w !== 'number' || (Number.isInteger(w) && w >= 0 && w <= MAX_VALUE);
 }

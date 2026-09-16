@@ -31,7 +31,7 @@ export default {
       prompt: `Round ${fmt(n)} to the nearest ${word}.`,
       answer,
       choices,
-      hint: `Look at the digit just right of the ${word}s place. 5 or more: round up. Less than 5: round down.`,
+      hint: `Find the ${word}s place. Look at the next digit to the right. 5 or more: round up. Less than 5: round down.`,
       explain: `The digit after the ${word}s place is ${next}. ${next >= 5 ? '5 or more, so round up' : 'Less than 5, so round down'}: ${fmt(ans)}.`,
     };
   },

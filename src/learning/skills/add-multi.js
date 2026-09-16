@@ -21,6 +21,9 @@ function noCarry(a, b) {
   return r;
 }
 
+const TIMES = ['', 'once', 'two times', 'three times', 'four times', 'five times'];
+const carryText = (n) => (n === 0 ? '' : n === 1 ? '. Carry the 1 once' : `. Carry a 1 ${TIMES[n]}`);
+
 export default {
   id: 'add-multi',
   standard: '4.NBT.B.4',
@@ -60,7 +63,7 @@ export default {
       answer,
       choices,
       hint: 'Line up the places. Add the ones first. 10 or more? Carry 1 to the next place.',
-      explain: `Add each place from right to left${cols.length ? ' and carry the 1s' : ''}. ${fmt(a)} + ${fmt(b)} = ${fmt(sum)}.`,
+      explain: `Add each place from right to left${carryText(cols.length)}. ${fmt(a)} + ${fmt(b)} = ${fmt(sum)}.`,
     };
   },
 };
