@@ -28,7 +28,13 @@ thinking (문제 제시)
 , finger on chin, looking up curiously, one small sparkle above the head --ar 1:1 --no text, shadow, floor, background objects --oref <참조 이미지> --ow 100
 ```
 
-oops (오답 · 절대 슬프거나 무섭지 않게)
+oops v02 (v01 은 입 두 개 · 다리 · 신발로 탈락 — 참조를 `mochi-thinking-v01.png` 로 바꿔 몸통 일치)
+
+```text
+cute 3D toy mascot character, pink glossy apple head with a cream peanut-shaped face plate, big teal eyes with white highlights, pink blush cheeks, small brown stem and translucent lavender leaf, small white rounded teardrop robot body that floats with no legs and no feet, lavender wrist bands, glowing lavender letter N on the chest, soft pastel studio lighting, full body, centered, plain pure white background, oops expression: eyes wide open with no eyebrows, one small round open mouth only, one hand touching its cheek, a tiny sweat drop beside the head, cute and friendly, not sad --ar 1:1 --no legs, feet, shoes, second mouth, smile line, text, shadow, floor, background objects
+```
+
+oops v01 (탈락 · 기록용)
 
 ```text
 , gentle surprised face with a small open mouth, one hand on cheek, a tiny sweat drop, still cute and friendly --ar 1:1 --no text, shadow, floor, background objects --oref <참조 이미지> --ow 100
