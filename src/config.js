@@ -1,5 +1,5 @@
 // 조정 수치는 전부 여기 — 속도 · 데미지 · 경직 · 색.
-export const VERSION = 'v0.1-greybox';
+export const VERSION = 'v0.2-dev';
 
 export const KEYS = {
   up: ['KeyW', 'ArrowUp'],
@@ -80,6 +80,7 @@ export const WAVES = {
   betweenDelay: 1.8,
   bossDelay: 2.0,
   quizDelay: 1.0,
+  afterQuizDelay: 0.6,
 };
 
 export const BOSS = {
@@ -184,6 +185,8 @@ export const COLORS = {
   particleHeart: [0xff7aa8, 0xffb3c7],
   particleRain: [0x7cc8ff, 0xbfe6ff],
   particleDust: [0xffffff, 0xe6fff4],
+  shield: 0xb9a7ff,
+  particleShield: [0xb9a7ff, 0xe3dbff, 0xffffff],
 };
 
 // HUD 용 색 (CSS)

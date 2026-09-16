@@ -301,3 +301,13 @@ export function createThunderModel() {
   root.add(core, glow);
   return root;
 }
+
+// ── 보스 방어막 (Cloud Gate 에서 못 깬 겹) ──────────────
+export function createShieldModel(radius) {
+  const root = new THREE.Group();
+  const bubble = mesh(sphere(radius, 32), flat(COLORS.shield, { transparent: true, opacity: 0.16, depthWrite: false }));
+  const ring = mesh(new THREE.TorusGeometry(radius, 0.05, 8, 48), flat(COLORS.shield, { transparent: true, opacity: 0.6, depthWrite: false }));
+  ring.rotation.x = Math.PI / 2;
+  root.add(bubble, ring);
+  return root;
+}

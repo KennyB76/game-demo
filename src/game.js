@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BOSS, CAMERA, COLORS, KEYS, LIGHT, PLAYER, WAVES } from './config.js';
+import { BOSS, CAMERA, COLORS, KEYS, LEARN, LIGHT, PLAYER, WAVES } from './config.js';
 import { Boss } from './boss.js';
 import { DamageNumbers, Particles, Shake } from './fx.js';
 import { Hud } from './hud.js';
@@ -9,6 +9,8 @@ import { Player } from './player.js';
 import { createArenaModel, createFlowerModel } from './shapes.js';
 import { currentStage } from './stages/index.js';
 import { Progress } from './learning/progress.js';
+import { LearningSession } from './learning/session.js';
+import { Quiz } from './quiz.js';
 import { ProgressPanel } from './progress-panel.js';
 import { clamp, damp, easeOutBack, pick } from './util.js';
 
@@ -65,6 +67,7 @@ export class Game {
     this.waveTotal = this.stage.flow.filter((s) => s.type === 'wave').length;
     this.progress = new Progress();
     this.progressPanel = new ProgressPanel(this.progress, this.stage);
+    this.quiz = new Quiz();
     this.state = 'title';
     this.reset();
     this.hud.showScreen('title');
@@ -100,6 +103,13 @@ export class Game {
     this.hud.setWave(`Wave 1/${this.waveTotal}`);
     this.hud.showBossBar(false);
     this.hud.setBossHp(1);
+    this.hud.setBossShields(0);
+    this.quiz.close();
+    this.session = new LearningSession(this.stage.learning, this.progress);
+    this.stars = 0;
+    this.hud.setStars(0);
+    this.shields = this.stage.flow.some((s) => s.type === 'quiz' && s.kind === 'gate') ? this.stage.learning.gate : 0;
+    this.reviewTimer = -1;
   }
 
   start() {
@@ -162,10 +172,34 @@ export class Game {
     return this.stage.flow[this.stepIndex + 1]?.type;
   }
 
-  startQuiz() {
-    // 퀴즈 UI 는 다음 커밋 — 지금은 바로 다음 단계로
-    this.phase = 'between';
-    this.phaseTimer = 0.01;
+  // 퀴즈 동안 액션은 멈춘다 (hit stop 과 별개인 'quiz' 상태)
+  startQuiz(step) {
+    this.phase = 'quiz';
+    this.state = 'quiz';
+    this.quiz.open({
+      kind: step.kind,
+      count: this.stage.learning[step.kind],
+      session: this.session,
+      onCorrect: (kind) => this.onQuizCorrect(kind),
+      onDone: () => {
+        this.state = 'play';
+        this.phase = 'between';
+        this.phaseTimer = WAVES.afterQuizDelay;
+      },
+    });
+  }
+
+  onQuizCorrect(kind) {
+    this.stars += LEARN.starsPerCorrect;
+    this.hud.setStars(this.stars, true);
+    if (kind === 'recharge') {
+      if (this.player.hearts >= PLAYER.maxHearts) return 'Hearts are full!';
+      this.player.hearts = Math.min(PLAYER.maxHearts, this.player.hearts + LEARN.rechargeHearts);
+      this.hud.setHearts(this.player.hearts, PLAYER.maxHearts);
+      return `+${LEARN.rechargeHearts} heart`;
+    }
+    this.shields = Math.max(0, this.shields - 1);
+    return 'Shield broken!';
   }
 
   spawnWave(W) {
@@ -186,13 +220,14 @@ export class Game {
   spawnBoss() {
     this.phase = 'boss';
     this.hud.setWave('Boss!');
-    this.hud.showBanner(`Here comes ${BOSS.name}!`);
+    this.hud.showBanner(this.shields > 0 ? `${BOSS.name} has ${this.shields} shield${this.shields > 1 ? 's' : ''}!` : `Here comes ${BOSS.name}!`);
     this.hud.showBossBar(true);
-    this.hud.setBossHp(1);
+    this.hud.setBossShields(this.shields);
     const pp = this.player.position;
     const pos = new THREE.Vector3(-pp.x, 0, -pp.z);
     if (pos.length() < 3) pos.set(0, 0, -6);
-    this.boss = new Boss(this, pos);
+    this.boss = new Boss(this, pos, { shields: this.shields, bonusHp: this.shields * LEARN.shieldBonusHp });
+    this.hud.setBossHp(this.boss.hp, this.boss.baseHp, this.boss.maxHp);
   }
 
   onPlayerDown() {
@@ -211,6 +246,14 @@ export class Game {
     this.hud.showBossBar(false);
     this.hud.showScreen('clear');
     this.hud.burstConfetti();
+    this.reviewTimer = LEARN.reviewDelay;
+  }
+
+  showReview() {
+    this.reviewTimer = -1;
+    this.state = 'review';
+    const st = this.session.stats;
+    this.hud.showReview({ stars: this.stars, asked: st.asked, firstTry: st.firstTry, practice: this.session.needsPractice(2) });
   }
 
   frame() {
@@ -226,16 +269,23 @@ export class Game {
     if (this.state === 'title') {
       this.progressPanel.handleKeys(input);
       if (!this.progressPanel.open && input.wasPressed(KEYS.start)) return this.start();
+    } else if (this.state === 'quiz') {
+      this.quiz.handleKeys(input);
     } else if (input.wasPressed(KEYS.restart)) {
       return this.start();
+    }
+
+    if (this.state === 'clear') {
+      this.reviewTimer -= dt;
+      if (this.reviewTimer <= 0 || input.wasPressed(KEYS.start)) this.showReview();
     }
 
     if (this.state === 'play') this.player.readInput(input);
     else this.player.moveInput.set(0, 0, 0);
     input.endFrame();
 
-    let gdt = dt;
-    if (this.hitstopTimer > 0) {
+    let gdt = this.state === 'quiz' ? 0 : dt;
+    if (gdt > 0 && this.hitstopTimer > 0) {
       this.hitstopTimer -= dt;
       gdt = 0;
     }

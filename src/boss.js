@@ -1,14 +1,15 @@
 import * as THREE from 'three';
 import { BOSS, COLORS, FEEL, HAZARD } from './config.js';
 import {
-  collectMaterials, createBlobShadow, createBossModel, createRaindropModel, createTelegraphModel, createThunderModel, setFlash,
+  collectMaterials, createBlobShadow, createBossModel, createRaindropModel, createShieldModel, createTelegraphModel, createThunderModel, setFlash,
 } from './shapes.js';
 import { clamp, clampToArena, damp, easeOutCubic, lerp, lerpAngle, Spring } from './util.js';
 
 const tmp = new THREE.Vector3();
 
 export class Boss {
-  constructor(game, pos) {
+  // opts.shields = Cloud Gate 에서 못 깬 방어막 겹 수, opts.bonusHp = 그만큼 더해진 HP
+  constructor(game, pos, opts = {}) {
     this.game = game;
     this.group = new THREE.Group();
     this.group.position.copy(pos);
@@ -23,7 +24,17 @@ export class Boss {
     game.world.add(this.group);
 
     this.radius = BOSS.radius;
-    this.hp = BOSS.hp;
+    this.baseHp = BOSS.hp;
+    this.shields = opts.shields ?? 0;
+    this.bonusPer = this.shields > 0 ? (opts.bonusHp ?? 0) / this.shields : 0;
+    this.maxHp = this.baseHp + this.bonusPer * this.shields;
+    this.hp = this.maxHp;
+    this.bubbles = [];
+    for (let i = 0; i < this.shields; i++) {
+      const b = createShieldModel(BOSS.radius * 1.2 + i * 0.3);
+      this.squash.add(b);
+      this.bubbles.push(b);
+    }
     this.state = 'enter';
     this.t = 0;
     this.time = 0;
@@ -47,7 +58,7 @@ export class Boss {
   }
 
   get angry() {
-    return this.hp < BOSS.hp * BOSS.angryAt;
+    return this.hp < this.baseHp * BOSS.angryAt;
   }
 
   update(dt) {
@@ -143,7 +154,23 @@ export class Boss {
     this.squash.scale.set((1 + s * 0.5) * p, (1 - s) * p, (1 + s * 0.5) * p);
     this.shadow.scale.setScalar(clamp(1.4 - this.height * 0.1, 0.3, 1.2) * Math.min(1, p));
     setFlash(this.mats, this.flash > 0 ? 1 : 0);
-    g.hud.setBossHp(this.hp / BOSS.hp);
+    this.bubbles.forEach((b, i) => {
+      b.rotation.y = this.time * (0.6 + i * 0.25);
+      b.rotation.z = Math.sin(this.time * 1.5 + i) * 0.2;
+    });
+    g.hud.setBossHp(this.hp, this.baseHp, this.maxHp);
+  }
+
+  popShield() {
+    const g = this.game;
+    const b = this.bubbles.pop();
+    this.squash.remove(b);
+    this.shields--;
+    g.hud.setBossShields(this.shields);
+    tmp.copy(this.position).setY(this.height);
+    g.particles.burst(tmp, { count: 22, kinds: ['dot', 'star'], colors: COLORS.particleShield, speed: 7, up: 3, size: 0.22, life: 0.7, spread: 2 });
+    g.shake(0.3);
+    g.hud.showBanner(this.shields > 0 ? 'Pop!' : 'No more shields!');
   }
 
   fire(kind) {
@@ -181,6 +208,7 @@ export class Boss {
     if (!this.targetable) return false;
     const g = this.game;
     this.hp = Math.max(0, this.hp - damage);
+    while (this.shields > 0 && this.hp <= this.baseHp + (this.shields - 1) * this.bonusPer) this.popShield();
     this.flash = FEEL.flashTime;
     this.kb.copy(dir).multiplyScalar(knockback * BOSS.knockbackScale);
     this.spring.kick(FEEL.hitSquashKick * 0.6);

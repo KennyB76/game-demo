@@ -11,12 +11,15 @@
 
     <div id="hud" class="hidden">
       <div class="hud-top">
-        <div id="hearts" class="hearts"></div>
+        <div class="hud-left">
+          <div id="hearts" class="hearts"></div>
+          <div id="stars" class="pill stars"><span id="star-icon"></span><span id="star-count">0</span></div>
+        </div>
         <div id="wave" class="pill">Wave 1/2</div>
       </div>
       <div id="boss-bar" class="boss-bar hidden">
-        <div id="boss-name" class="boss-name"></div>
-        <div class="bar"><div id="boss-fill" class="fill"></div></div>
+        <div class="boss-name"><span id="boss-name"></span> <span id="boss-shields" class="boss-shields"></span></div>
+        <div class="bar"><div id="boss-fill" class="fill"></div><div id="boss-shield" class="shield-fill"></div></div>
       </div>
       <div id="banner" class="banner"></div>
       <div id="numbers"></div>
@@ -67,6 +70,14 @@
         <h2 class="progress-title">Progress</h2>
         <div id="progress-body"></div>
       </div>
+    </div>
+
+    <div id="screen-quiz" class="screen hidden quiz-screen">
+      <div id="quiz-card" class="card quiz-card"></div>
+    </div>
+
+    <div id="screen-review" class="screen hidden">
+      <div id="review-card" class="card review-card"></div>
     </div>
 
     <div id="screen-over" class="screen hidden">
