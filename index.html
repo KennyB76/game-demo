@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Twinkle Wand</title>
     <link rel="icon" href="data:," />
+    <script type="module" crossorigin src="./assets/index-CXVE8BfI.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-iX2PXuN9.css">
   </head>
   <body>
     <canvas id="game"></canvas>
@@ -101,6 +103,14 @@
     </div>
 
     <div class="version"></div>
-    <script type="module" src="/src/main.js"></script>
+    <div id="touch-controls" aria-label="Touch controls">
+      <div class="touch-dpad" aria-label="Move">
+        <button data-key="ArrowUp" aria-label="Move up">▲</button>
+        <button data-key="ArrowLeft" aria-label="Move left">◀</button>
+        <button data-key="ArrowDown" aria-label="Move down">▼</button>
+        <button data-key="ArrowRight" aria-label="Move right">▶</button>
+      </div>
+      <div class="touch-actions"><button data-key="Space" aria-label="Magic">Magic</button><button data-key="ShiftLeft" aria-label="Roll">Roll</button></div>
+    </div>
   </body>
 </html>

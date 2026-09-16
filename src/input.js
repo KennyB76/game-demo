@@ -24,6 +24,15 @@ export class Input {
       if (e.button === 0) this.mousePressed = true;
     });
     window.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.querySelectorAll('[data-key]').forEach((button) => {
+      const key = button.dataset.key;
+      const press = (e) => { e.preventDefault(); this.down.add(key); this.pressed.add(key); };
+      const release = (e) => { e.preventDefault(); this.down.delete(key); };
+      button.addEventListener('pointerdown', press, { passive: false });
+      button.addEventListener('pointerup', release, { passive: false });
+      button.addEventListener('pointercancel', release, { passive: false });
+      button.addEventListener('pointerleave', release, { passive: false });
+    });
   }
 
   isDown(codes) {
