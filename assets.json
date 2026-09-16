@@ -1,4 +1,16 @@
 {
   "project": "game-demo",
-  "assets": []
+  "assets": [
+    { "id": "mochi-thinking", "file": "public/assets/sprites/mochi/mochi-thinking-v01.png",
+      "version": 1, "kind": "sprite-sheet", "tool": "Midjourney", "model": "V7 (Omni Reference)",
+      "prompt": "prompts/mochi-2d.md", "status": "in-game", "date": "2026-09-16" },
+    { "id": "mochi-happy", "file": "public/assets/sprites/mochi/mochi-happy-v02.png",
+      "version": 2, "kind": "sprite-sheet", "tool": "Midjourney", "model": "V7 (Omni Reference)",
+      "prompt": "prompts/mochi-2d.md", "status": "in-game", "date": "2026-09-16",
+      "note": "v02 = right eye corrected with ImageMagick" },
+    { "id": "mochi-oops", "file": "public/assets/sprites/mochi/mochi-oops-v02.png",
+      "version": 2, "kind": "sprite-sheet", "tool": "Midjourney", "model": "V7 (Omni Reference)",
+      "prompt": "prompts/mochi-2d.md", "status": "in-game", "date": "2026-09-16",
+      "note": "v02 = regenerated (v01 rejected)" }
+  ]
 }
