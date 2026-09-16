@@ -26,8 +26,9 @@ export class Input {
     window.addEventListener('contextmenu', (e) => e.preventDefault());
     document.querySelectorAll('[data-key]').forEach((button) => {
       const key = button.dataset.key;
-      const press = (e) => { e.preventDefault(); this.down.add(key); this.pressed.add(key); };
-      const release = (e) => { e.preventDefault(); this.down.delete(key); };
+      const keys = button.hasAttribute('data-move-hit') ? [key, 'Space'] : [key];
+      const press = (e) => { e.preventDefault(); if (button.setPointerCapture) button.setPointerCapture(e.pointerId); keys.forEach((k) => { this.down.add(k); this.pressed.add(k); }); };
+      const release = (e) => { e.preventDefault(); keys.forEach((k) => this.down.delete(k)); };
       button.addEventListener('pointerdown', press, { passive: false });
       button.addEventListener('pointerup', release, { passive: false });
       button.addEventListener('pointercancel', release, { passive: false });
