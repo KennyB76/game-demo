@@ -104,6 +104,18 @@ export const BOSS = {
   thunder: { radius: 2.1, telegraph: 2.2, damage: 1, extraAngry: 2, extraOffset: 3.2, extraDelay: 0.5 },
 };
 
+// 학습 구조 — 스테이지마다 다른 값은 src/stages/stage-*.js 의 learning 에
+export const LEARN = {
+  storageKey: 'twinkle-wand.progress.v1',
+  shieldBonusHp: 60, // Cloud Gate 에서 못 깬 방어막 한 겹당 보스 HP 보너스
+  rechargeHearts: 1,
+  starsPerCorrect: 1,
+  praiseTime: 1.3,
+  praise: ['Great job!', 'You got it!', 'Super!', 'Awesome!', 'Nice work!', 'Wow!'],
+  retryText: 'Almost! Try again.',
+  reviewDelay: 2.4,
+};
+
 export const HAZARD = {
   fallTime: 0.35,
   fallHeight: 9,
@@ -188,6 +200,13 @@ export const CSS_COLORS = {
   titleA: '#ff7aa8',
   titleB: '#9d8cff',
   overlay: 'rgba(191, 230, 255, 0.55)',
+  star: '#ffc93c',
+  shield: '#b9a7ff',
+  choice: '#ffffff',
+  choiceHover: '#f3edff',
+  correct: '#8fe3b8',
+  wrong: '#ffc2d4',
+  hintBg: '#fff7d6',
   damage: ['#ff6fa5', '#ffa24d', '#6fb8ff', '#b07cff'],
   damageBig: '#ffb800',
   confetti: ['#ff8fb1', '#ffd166', '#9ed8ff', '#c3a6ff', '#9ff0c5', '#ffffff'],

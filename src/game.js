@@ -8,6 +8,8 @@ import { Jelly } from './jelly.js';
 import { Player } from './player.js';
 import { createArenaModel, createFlowerModel } from './shapes.js';
 import { currentStage } from './stages/index.js';
+import { Progress } from './learning/progress.js';
+import { ProgressPanel } from './progress-panel.js';
 import { clamp, damp, easeOutBack, pick } from './util.js';
 
 const tmp = new THREE.Vector3();
@@ -56,11 +58,13 @@ export class Game {
     window.addEventListener('resize', () => this.onResize());
     document.getElementById('start-btn').addEventListener('click', (e) => {
       e.stopPropagation();
-      if (this.state === 'title') this.start();
+      if (this.state === 'title' && !this.progressPanel.open) this.start();
     });
 
     this.stage = currentStage();
     this.waveTotal = this.stage.flow.filter((s) => s.type === 'wave').length;
+    this.progress = new Progress();
+    this.progressPanel = new ProgressPanel(this.progress, this.stage);
     this.state = 'title';
     this.reset();
     this.hud.showScreen('title');
@@ -220,7 +224,8 @@ export class Game {
   update(dt) {
     const input = this.input;
     if (this.state === 'title') {
-      if (input.wasPressed(KEYS.start)) return this.start();
+      this.progressPanel.handleKeys(input);
+      if (!this.progressPanel.open && input.wasPressed(KEYS.start)) return this.start();
     } else if (input.wasPressed(KEYS.restart)) {
       return this.start();
     }
