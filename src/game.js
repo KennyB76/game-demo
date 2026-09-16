@@ -7,6 +7,7 @@ import { Input } from './input.js';
 import { Jelly } from './jelly.js';
 import { Player } from './player.js';
 import { createArenaModel, createFlowerModel } from './shapes.js';
+import { currentStage } from './stages/index.js';
 import { clamp, damp, easeOutBack, pick } from './util.js';
 
 const tmp = new THREE.Vector3();
@@ -58,6 +59,8 @@ export class Game {
       if (this.state === 'title') this.start();
     });
 
+    this.stage = currentStage();
+    this.waveTotal = this.stage.flow.filter((s) => s.type === 'wave').length;
     this.state = 'title';
     this.reset();
     this.hud.showScreen('title');
@@ -83,13 +86,14 @@ export class Game {
     this.flowers = [];
     this.boss = null;
     this.player = new Player(this);
-    this.waveIndex = -1;
+    this.stepIndex = -1;
+    this.waveNumber = 0;
     this.phase = 'between';
     this.phaseTimer = WAVES.firstDelay;
     this.hitstopTimer = 0;
     this.endTimer = -1;
     this.hud.setHearts(PLAYER.maxHearts, PLAYER.maxHearts);
-    this.hud.setWave(`Wave 1/${WAVES.list.length}`);
+    this.hud.setWave(`Wave 1/${this.waveTotal}`);
     this.hud.showBossBar(false);
     this.hud.setBossHp(1);
   }
@@ -140,19 +144,38 @@ export class Game {
     this.flowers.push({ root, t: -0.15 - Math.random() * 0.15, size: 1.6 + Math.random() * 0.8 });
   }
 
-  spawnWave(i) {
-    const W = WAVES.list[i];
-    this.waveIndex = i;
+  // 스테이지 흐름의 다음 단계로
+  advance() {
+    this.stepIndex++;
+    const step = this.stage.flow[this.stepIndex];
+    if (!step) return;
+    if (step.type === 'wave') this.spawnWave(step);
+    else if (step.type === 'quiz') this.startQuiz(step);
+    else if (step.type === 'boss') this.spawnBoss(step);
+  }
+
+  nextStepType() {
+    return this.stage.flow[this.stepIndex + 1]?.type;
+  }
+
+  startQuiz() {
+    // 퀴즈 UI 는 다음 커밋 — 지금은 바로 다음 단계로
+    this.phase = 'between';
+    this.phaseTimer = 0.01;
+  }
+
+  spawnWave(W) {
+    this.waveNumber++;
     this.phase = 'wave';
-    this.hud.setWave(`Wave ${i + 1}/${WAVES.list.length}`);
-    this.hud.showBanner(`Wave ${i + 1}!`);
+    this.hud.setWave(`Wave ${this.waveNumber}/${this.waveTotal}`);
+    this.hud.showBanner(`Wave ${this.waveNumber}!`);
     const pp = this.player.position;
     const away = Math.atan2(-pp.z, -pp.x);
     for (let k = 0; k < W.count; k++) {
       const a = away + ((k - (W.count - 1) / 2) / W.count) * Math.PI * 1.4;
       const pos = new THREE.Vector3(Math.cos(a) * WAVES.spawnRadius, 0, Math.sin(a) * WAVES.spawnRadius);
       if (pos.distanceTo(pp) < 5) pos.multiplyScalar(-1);
-      this.enemies.push(new Jelly(this, pos, k + i, k * 0.25));
+      this.enemies.push(new Jelly(this, pos, k + this.waveNumber, k * 0.25));
     }
   }
 
@@ -252,16 +275,12 @@ export class Game {
     if (dt <= 0) return;
     if (this.phase === 'between') {
       this.phaseTimer -= dt;
-      if (this.phaseTimer <= 0) {
-        const next = this.waveIndex + 1;
-        if (next < WAVES.list.length) this.spawnWave(next);
-        else this.spawnBoss();
-      }
+      if (this.phaseTimer <= 0) this.advance();
     } else if (this.phase === 'wave' && this.enemies.length === 0) {
       this.phase = 'between';
-      const last = this.waveIndex === WAVES.list.length - 1;
-      this.phaseTimer = last ? WAVES.bossDelay : WAVES.betweenDelay;
-      this.hud.showBanner(last ? 'Great job!' : 'Nice!');
+      const next = this.nextStepType();
+      this.phaseTimer = next === 'boss' ? WAVES.bossDelay : next === 'quiz' ? WAVES.quizDelay : WAVES.betweenDelay;
+      this.hud.showBanner(next === 'boss' ? 'Great job!' : 'Nice!');
     }
   }
 

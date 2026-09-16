@@ -79,6 +79,7 @@ export const WAVES = {
   firstDelay: 0.8,
   betweenDelay: 1.8,
   bossDelay: 2.0,
+  quizDelay: 1.0,
 };
 
 export const BOSS = {
