@@ -1,0 +1,17 @@
+# dependencies and build
+node_modules/
+dist/
+
+# raw AI generations - never commit
+art-src/*
+!art-src/README.md
+
+# blender autosave
+*.blend1
+*.blend2
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.log
+.env
